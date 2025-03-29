@@ -123,7 +123,7 @@ const SearchResults = ({ hits, loading }) => {
           >
             <div className="flex gap-[20px] xl:gap-[45px]">
               <div className="w-[100px] xl:w-[158px] h-[120px] flex items-center justify-center bg-white rounded-[10px] shadow-[0px_4px_4px_0px_rgba(231,231,231,0.25),0px_3.94px_10px_0px_rgba(232,232,232,0.25),0px_4.34px_68px_0px_rgba(198,198,198,0.25)]">
-                <img src="/assets/imageua.svg" alt={markName} />
+                <img src="/assets/Imageua.svg" alt={markName} />
               </div>
               <div className="flex flex-col gap-[27px] w-[150px] xl:w-[190px]">
                 <div className="flex flex-col gap-[6px]">
