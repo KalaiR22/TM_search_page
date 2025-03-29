@@ -14,7 +14,11 @@ import { Suspense } from "react";
 // Create a cache for API responses
 const apiCache = new Map();
 
- function HomeContent() {
+// Configuration for API retries
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 1000;
+
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchParamsString = useMemo(
@@ -229,6 +233,85 @@ const apiCache = new Map();
     }
   }, [selectedFilters, shouldUpdateURL, isInitialLoad, updateURLWithFilters]);
 
+  // Function to fetch data with retry logic
+  const fetchDataWithRetry = useCallback(
+    async (body, cacheKey, isFilteredSearch, retryCount = 0) => {
+      try {
+        const response = await fetch(
+          "https://vit-tm-task.api.trademarkia.app/api/v3/us",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+            next: { revalidate: 3600 }, // Cache for 1 hour
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `API Error: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const result = await response.json();
+
+        if (!result.body || !result.body.hits) {
+          throw new Error("Invalid response format from API");
+        }
+
+        // Store in cache
+        apiCache.set(cacheKey, result.body);
+
+        setData(result.body);
+        setHits(result.body.hits?.hits || []);
+        setTotal(result.body.hits?.total?.value || "");
+        setAggregations(result.body.aggregations || {});
+
+        // Only update initialAggregations on non-filtered searches
+        if (!isFilteredSearch) {
+          setInitialAggregations(result.body.aggregations || {});
+        }
+
+        setError(null); // Clear any previous errors
+        setLoading(false);
+      } catch (error) {
+        console.error(`API fetch attempt ${retryCount + 1} failed:`, error);
+
+        // Retry logic
+        if (retryCount < MAX_RETRY_ATTEMPTS - 1) {
+          console.log(
+            `Retrying in ${RETRY_DELAY_MS}ms... (Attempt ${
+              retryCount + 2
+            }/${MAX_RETRY_ATTEMPTS})`
+          );
+
+          // Wait before retrying
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+
+          // Increment delay for exponential backoff (optional)
+          const nextRetryDelay = RETRY_DELAY_MS * (retryCount + 1);
+
+          // Try again with incremented retry count
+          return fetchDataWithRetry(
+            body,
+            cacheKey,
+            isFilteredSearch,
+            retryCount + 1
+          );
+        } else {
+          // All retries failed
+          console.error("All retry attempts failed:", error);
+          setError(error.message);
+          setHits([]);
+          setLoading(false);
+        }
+      }
+    },
+    []
+  );
+
   // Debounced fetch data function to prevent rapid re-renders
   const debouncedFetchData = useCallback(() => {
     // Clear any existing timeout
@@ -301,55 +384,19 @@ const apiCache = new Map();
           counties: [],
         };
 
-        try {
-          const response = await fetch(
-            "https://vit-tm-task.api.trademarkia.app/api/v3/us",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(body),
-              next: { revalidate: 3600 }, // Cache for 1 hour
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error(
-              `API Error: ${response.status} ${response.statusText}`
-            );
-          }
-
-          const result = await response.json();
-
-          if (!result.body || !result.body.hits) {
-            throw new Error("Invalid response format from API");
-          }
-
-          // Store in cache
-          apiCache.set(cacheKey, result.body);
-
-          setData(result.body);
-          setHits(result.body.hits?.hits || []);
-          setTotal(result.body.hits?.total?.value || "");
-          setAggregations(result.body.aggregations || {});
-
-          // Only update initialAggregations on non-filtered searches
-          if (!isFilteredSearch) {
-            setInitialAggregations(result.body.aggregations || {});
-          }
-        } catch (error) {
-          console.error("Error fetching data:", error);
-          setError(error.message);
-          setHits([]);
-        } finally {
-          setLoading(false);
-        }
+        // Use the retry function instead of directly fetching
+        await fetchDataWithRetry(body, cacheKey, isFilteredSearch);
       };
 
       fetchData();
     }, 300); // 300ms debounce time
-  }, [searchParamsString, selectedFilters, isInitialLoad, searchParams]);
+  }, [
+    searchParamsString,
+    selectedFilters,
+    isInitialLoad,
+    searchParams,
+    fetchDataWithRetry,
+  ]);
 
   // Use effect to trigger the debounced fetch
   useEffect(() => {
@@ -391,7 +438,7 @@ const apiCache = new Map();
     if (error) {
       return (
         <div className="mt-4 p-4 bg-red-50 text-red-600 rounded">
-          Error loading results: {error}. Please try again later.
+          Error loading results: {error}. Retrying...
         </div>
       );
     }

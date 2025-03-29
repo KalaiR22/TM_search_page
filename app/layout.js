@@ -8,7 +8,7 @@ export const metadata = {
     description: "Search page",
     images: [
       {
-        url: "/logo.jpeg", // Replace with the actual image path
+        url: "https://res.cloudinary.com/davqsdhdv/image/upload/v1743254310/logo-removebg-preview_t17kzs.png", // Replace with the actual image path
         width: 1200,
         height: 630,
         alt: "Trademarkia",
@@ -23,7 +23,10 @@ export default function RootLayout({ children }) {
       <head>
         <meta property="og:title" content="Create Next App" />
         <meta property="og:description" content="Search page" />
-        <meta property="og:image" content="/logo.jpeg" />
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/davqsdhdv/image/upload/v1743254310/logo-removebg-preview_t17kzs.png"
+        />
         <meta property="og:type" content="website" />
         <link
           rel="icon"
