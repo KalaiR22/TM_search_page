@@ -39,7 +39,7 @@ const Searchbar = memo(() => {
   return (
     <div className="flex flex-col sm:flex-row gap-[20px] md:gap-[50px] py-[30px] items-center bg-lightblue border-b-[6px] border-secondryblue px-[10px] sm:px-[30px] lg:pl-[79.5px]">
       <Image
-        src="/assets/Logo.svg"
+        src="/assets/logo_trademarkia.webp"
         alt="Trademarkia logo"
         width={155}
         height={22}
