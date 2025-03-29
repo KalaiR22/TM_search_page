@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme{
+  --color-primaryblue:#4380EC;
+  --color-lightblue:#F8FAFE;
+  --color-bgblue:#EEF4FF;
+  --color-secondryblue:#EAF1FF;
+  --color-white:#FFFFFF;
+  --color-primarygrey:#D4D4D4;
+  --color-secondrygrey:#636363;
+  --color-teriterygrey:#E7E6E6;
+  --color-greyborder:#C8C8C8;
+  --color-darkgrey:#4B5563;
+  --color-secdarkgrey:#575757;
+  --color-darkgreen:#128807;
+  --color-lightgreen:#41B65C;
+  --color-green:#52B649;
+  --color-redpri:#EC4A4A;
+  --color-redsec:#EC3C3C;
+  --color-yellow:#ECC53C;
+  --color-primaryblack:#1A1A1A;
+  --color-secondryblack:#313131;
+  --color-teriteryblack:#1D1C1D;
+  --color-fourblack:#3A3A3A;
+  --color-primaryorange:#E7760E;
+  --color-secOrange:#FEF7F0;
+  --font-dmSans: "DM Sans", "sans-serif";
+
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/Gilroy-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+body{
+  background-color: #FEFEFE;
+  
+}
+
+.font-regular {
+  font-family: 'Gilroy', sans-serif;
+  font-weight: 400;
+}
+
+.font-medium {
+  font-family: 'Gilroy', sans-serif;
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-family: 'Gilroy', sans-serif;
+  font-weight: 600;
+}
+
+.font-bold {
+  font-family: 'Gilroy', sans-serif;
+  font-weight: 700;
+}
