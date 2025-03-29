@@ -10,11 +10,11 @@ import SearchResults from "./components/SearchResults";
 import Status from "./components/Status";
 import Options from "./components/Options";
 import GridResult from "./components/GridResult";
-
+import { Suspense } from "react";
 // Create a cache for API responses
 const apiCache = new Map();
 
-export default function Home() {
+ function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchParamsString = useMemo(
@@ -481,5 +481,13 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading search page...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
